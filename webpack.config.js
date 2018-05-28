@@ -1,8 +1,5 @@
 const path = require('path')
 const webpack = require('webpack')
-const {
-  VueLoaderPlugin
-} = require('vue-loader')
 
 module.exports = {
   mode: 'production',
@@ -17,13 +14,10 @@ module.exports = {
     "stellar-sdk",
     "axios"
   ],
-  plugins: [
-    new VueLoaderPlugin()
-  ],
   module: {
     rules: [{
         enforce: 'pre',
-        test: /.(vue|js)$/,
+        test: /\.js$/,
         exclude: /node_modules/,
         use: {
           loader: "eslint-loader",
@@ -31,15 +25,6 @@ module.exports = {
             fix: true
           }
         }
-      },
-      {
-        test: /\.vue$/,
-        use: 'vue-loader',
-        exclude: /node_modules/
-      },
-      {
-        test: /\.scss$/,
-        use: ['vue-style-loader', 'css-loader', 'sass-loader']
       },
       {
         test: /\.js$/,

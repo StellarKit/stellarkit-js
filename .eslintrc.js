@@ -1,17 +1,16 @@
 module.exports = {
   extends: [
-    'eslint:recommended',
-    'plugin:vue/base' // or 'plugin:vue/recommended'
+    'eslint:recommended'
   ],
-  "parserOptions": {
-    "ecmaVersion": 2017
-  },
   env: {
-    "node": true
+    "node": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "sourceType": "module"
   },
   rules: {
     "no-console": 0,
-    "vue/require-v-for-key": 0,
     'linebreak-style': ["error", "unix"],
     'default-case': 2,
     'no-var': 2,
@@ -120,7 +119,6 @@ module.exports = {
     'spaced-comment': [2, 'always', {
       'markers': ['global', 'globals', 'eslint', 'eslint-disable', '*package', '!', ',']
     }],
-    'jsx-quotes': [2, 'prefer-single'],
-    'vue/jsx-uses-vars': 2
+    'jsx-quotes': [2, 'prefer-single']
   }
 }

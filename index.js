@@ -1,9 +1,9 @@
-import StellarAPI from './src/js/StellarAPI.js'
-import HorizonServer from './src/js/HorizonServer.js'
-import StellarWallet from './src/js/StellarWallet.js'
-import LedgerAPI from './src/js/LedgerAPI.js'
-import LedgerAPITransport from './src/js/LedgerAPITransport.js'
-import TransactionLogger from './src/js/TransactionLogger.js'
+import StellarAPI from './src/StellarAPI.js'
+import HorizonServer from './src/HorizonServer.js'
+import StellarWallet from './src/StellarWallet.js'
+import LedgerAPI from './src/LedgerAPI.js'
+import LedgerAPITransport from './src/LedgerAPITransport.js'
+import TransactionLogger from './src/TransactionLogger.js'
 
 export {
   StellarAPI,
