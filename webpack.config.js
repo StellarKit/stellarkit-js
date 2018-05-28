@@ -10,6 +10,7 @@ module.exports = {
     library: 'stellarkit-js',
     libraryTarget: 'umd'
   },
+  target: 'node',
   externals: [
     "stellar-sdk",
     "axios"
