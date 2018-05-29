@@ -311,6 +311,30 @@ export default class StellarAPI {
       })
   }
 
+  // swap assets one for one.
+  atomicSwap(walletOne, assetOne, walletTwo, assetTwo, fundingWallet, amount) {
+    let walletOnePublicKey
+    let walletTwoPublicKey
+
+    return walletOne.publicKey()
+      .then((publicKey) => {
+        walletOnePublicKey = publicKey
+        return walletTwo.publicKey()
+      })
+      .then((publicKey) => {
+        walletTwoPublicKey = publicKey
+
+        // walletOne doesn't matter, just need the funding wallet account
+        return this._processAccounts(walletOne, fundingWallet)
+      })
+      .then((accountInfo) => {
+        const sendOne = StellarOperations.paymentOperation(walletTwoPublicKey, amount, assetOne, walletOnePublicKey)
+        const sendTwo = StellarOperations.paymentOperation(walletOnePublicKey, amount, assetTwo, walletTwoPublicKey)
+
+        return this._submitOperations('atomic swap', walletOne, fundingWallet, [sendOne, sendTwo], accountInfo, null, [walletTwo])
+      })
+  }
+
   getFlags(sourceWallet) {
     return sourceWallet.publicKey()
       .then((publicKey) => {
