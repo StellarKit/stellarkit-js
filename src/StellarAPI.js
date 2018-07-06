@@ -475,7 +475,7 @@ export default class StellarAPI {
 
   multiOperation(sourceWallet, fundingWallet, operationSpecs) {
     let sourcePublicKey = null
-    const operations = []
+    let operations = []
 
     return sourceWallet.publicKey()
       .then((publicKey) => {
@@ -487,25 +487,41 @@ export default class StellarAPI {
         return this.server().loadAccount(publicKey)
       })
       .then((account) => {
+        let nextPromise = Promise.resolve()
+
         for (const spec of operationSpecs) {
-          switch (spec.type) {
-            case 'change-trust':
-              {
-                const operation = StellarOperations.changeTrustOperation(spec.asset, spec.limit, sourcePublicKey)
-                operations.push(operation)
-              }
-              break
-            default:
-              console.log('not handled: ' + spec.type)
-              break
+          nextPromise = nextPromise.then(() => {
+            switch (spec.type) {
+              case 'change-trust':
+                {
+                  const operation = StellarOperations.changeTrustOperation(spec.asset, spec.limit, sourcePublicKey)
+                  operations.push(operation)
+
+                  return null
+                }
+              case 'multisig':
+                return spec.secondWallet.publicKey()
+                  .then((publicKey) => {
+                    const opts = StellarOperations.multisigOperations(publicKey, 1, 2, 2, sourcePublicKey)
+
+                    operations = operations.concat(opts)
+
+                    return null
+                  })
+              default:
+                console.log('not handled: ' + spec.type)
+                return null
+            }
+          })
+        }
+
+        return nextPromise.then(() => {
+          if (operations.length === 0) {
+            throw new Error('multi operation failed')
           }
-        }
 
-        if (operations.length === 0) {
-          throw new Error('multi operation failed')
-        }
-
-        return this._submitOperations(account, 'multi-operation', sourceWallet, fundingWallet, operations)
+          return this._submitOperations(account, 'multi-operation', sourceWallet, fundingWallet, operations)
+        })
       })
   }
 
