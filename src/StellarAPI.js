@@ -122,12 +122,12 @@ export default class StellarAPI {
   }
 
   // fundingWallet is normally null unless you want to pay with a different accout for the sourceWallet Account
-  manageOffer(sourceWallet, fundingWallet, buying, selling, amount, price, offerID = 0) {
+  manageOffer(sourceWallet, fundingWallet, buying, selling, amount, price, offerID = 0, additionalSigners = null) {
     return this._processAccounts(sourceWallet, fundingWallet)
       .then((accountInfo) => {
         const operation = StellarOperations.manageOfferOperation(buying, selling, amount, price, offerID, accountInfo.sourcePublicKey)
 
-        return this._submitOperations('manage offer', sourceWallet, fundingWallet, [operation], accountInfo)
+        return this._submitOperations('manage offer', sourceWallet, fundingWallet, [operation], accountInfo, null, additionalSigners)
       })
   }
 
@@ -312,7 +312,7 @@ export default class StellarAPI {
   }
 
   // swap assets one for one.
-  atomicSwap(walletOne, assetOne, walletTwo, assetTwo, fundingWallet, amount) {
+  atomicSwap(walletOne, assetOne, walletTwo, assetTwo, fundingWallet, amount, additionalSigners = null) {
     let walletOnePublicKey
     let walletTwoPublicKey
 
@@ -331,7 +331,12 @@ export default class StellarAPI {
         const sendOne = StellarOperations.paymentOperation(walletTwoPublicKey, amount, assetOne, walletOnePublicKey)
         const sendTwo = StellarOperations.paymentOperation(walletOnePublicKey, amount, assetTwo, walletTwoPublicKey)
 
-        return this._submitOperations('atomic swap', walletOne, fundingWallet, [sendOne, sendTwo], accountInfo, null, [walletTwo])
+        let signers = [walletTwo]
+        if (additionalSigners) {
+          signers = signers.concat(additionalSigners)
+        }
+
+        return this._submitOperations('atomic swap', walletOne, fundingWallet, [sendOne, sendTwo], accountInfo, null, signers)
       })
   }
 
