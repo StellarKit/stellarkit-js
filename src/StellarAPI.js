@@ -127,7 +127,7 @@ export default class StellarAPI {
       .then((accountInfo) => {
         const operation = StellarOperations.manageOfferOperation(buying, selling, amount, price, offerID, accountInfo.sourcePublicKey)
 
-        return this._submitOperations('manage offer', sourceWallet, fundingWallet, [operation], accountInfo, null, additionalSigners)
+        return this._submitOperations(accountInfo.account, 'manage offer', sourceWallet, fundingWallet, [operation], null, additionalSigners)
       })
   }
 
@@ -136,7 +136,7 @@ export default class StellarAPI {
       .then((accountInfo) => {
         const operation = StellarOperations.changeTrustOperation(asset, limit, accountInfo.sourcePublicKey)
 
-        return this._submitOperations('change trust', sourceWallet, fundingWallet, [operation], accountInfo)
+        return this._submitOperations(accountInfo.account, 'change trust', sourceWallet, fundingWallet, [operation])
       })
   }
 
@@ -152,7 +152,7 @@ export default class StellarAPI {
       .then((accountInfo) => {
         const operation = StellarOperations.allowTrustOperation(destPublicKey, asset, authorize, accountInfo.sourcePublicKey)
 
-        return this._submitOperations('allow trust', sourceWallet, fundingWallet, [operation], accountInfo)
+        return this._submitOperations(accountInfo.account, 'allow trust', sourceWallet, fundingWallet, [operation])
       })
   }
 
@@ -169,7 +169,7 @@ export default class StellarAPI {
       .then((accountInfo) => {
         const operations = StellarOperations.multisigOperations(secondPublicKey, 1, threshold, threshold, accountInfo.sourcePublicKey)
 
-        return this._submitOperations('make multisig', sourceWallet, fundingWallet, operations, accountInfo)
+        return this._submitOperations(accountInfo.account, 'make multisig', sourceWallet, fundingWallet, operations)
       })
   }
 
@@ -251,7 +251,7 @@ export default class StellarAPI {
         }
 
         return nextPromise.then(() => {
-          return this._submitOperations('send asset batch', sourceWallet, fundingWallet, operations, accountInfo, memo, additionalSigners)
+          return this._submitOperations(accountInfo.account, 'send asset batch', sourceWallet, fundingWallet, operations, memo, additionalSigners)
         })
       })
   }
@@ -276,7 +276,7 @@ export default class StellarAPI {
       .then((accountInfo) => {
         const operation = StellarOperations.paymentOperation(destKey, amount, asset, accountInfo.sourcePublicKey)
 
-        return this._submitOperations('send asset', sourceWallet, fundingWallet, [operation], accountInfo, memo, additionalSigners)
+        return this._submitOperations(accountInfo.account, 'send asset', sourceWallet, fundingWallet, [operation], memo, additionalSigners)
       })
   }
 
@@ -298,7 +298,7 @@ export default class StellarAPI {
       .then((accountInfo) => {
         const operation = StellarOperations.pathPaymentOperation(sourcePublicKey, sendAsset, sendMax, destAsset, destAmount, accountInfo.sourcePublicKey)
 
-        return this._submitOperations('buy asset', sourceWallet, fundingWallet, [operation], accountInfo, null, additionalSigners)
+        return this._submitOperations(accountInfo.account, 'buy asset', sourceWallet, fundingWallet, [operation], null, additionalSigners)
       })
   }
 
@@ -307,7 +307,7 @@ export default class StellarAPI {
       .then((accountInfo) => {
         const operation = StellarOperations.manageDataOperation(name, value, accountInfo.sourcePublicKey)
 
-        return this._submitOperations('manage data', sourceWallet, fundingWallet, [operation], accountInfo, null, additionalSigners)
+        return this._submitOperations(accountInfo.account, 'manage data', sourceWallet, fundingWallet, [operation], null, additionalSigners)
       })
   }
 
@@ -336,7 +336,7 @@ export default class StellarAPI {
           signers = signers.concat(additionalSigners)
         }
 
-        return this._submitOperations('atomic swap', walletOne, fundingWallet, [sendOne, sendTwo], accountInfo, null, signers)
+        return this._submitOperations(accountInfo.account, 'atomic swap', walletOne, fundingWallet, [sendOne, sendTwo], null, signers)
       })
   }
 
@@ -465,7 +465,47 @@ export default class StellarAPI {
       .then((accountInfo) => {
         const operation = StellarOperations.setOptionsOperation(options, accountInfo.sourcePublicKey)
 
-        return this._submitOperations('set options', sourceWallet, fundingWallet, [operation], accountInfo, null, additionalSigners)
+        return this._submitOperations(accountInfo.account, 'set options', sourceWallet, fundingWallet, [operation], null, additionalSigners)
+      })
+  }
+
+  // ======================================================================
+  // Multioperation
+  // ======================================================================
+
+  multiOperation(sourceWallet, fundingWallet, operationSpecs) {
+    let sourcePublicKey = null
+    const operations = []
+
+    return sourceWallet.publicKey()
+      .then((publicKey) => {
+        sourcePublicKey = publicKey
+
+        return fundingWallet.publicKey()
+      })
+      .then((publicKey) => {
+        return this.server().loadAccount(publicKey)
+      })
+      .then((account) => {
+        for (const spec of operationSpecs) {
+          switch (spec.type) {
+            case 'change-trust':
+              {
+                const operation = StellarOperations.changeTrustOperation(spec.asset, spec.limit, sourcePublicKey)
+                operations.push(operation)
+              }
+              break
+            default:
+              console.log('not handled: ' + spec.type)
+              break
+          }
+        }
+
+        if (operations.length === 0) {
+          throw new Error('multi operation failed')
+        }
+
+        return this._submitOperations(account, 'multi-operation', sourceWallet, fundingWallet, operations)
       })
   }
 
@@ -516,8 +556,8 @@ export default class StellarAPI {
       })
   }
 
-  _submitOperations(label, sourceWallet, fundingWallet, operations, accountInfo, memo = null, additionalSigners = null) {
-    const builder = new StellarSdk.TransactionBuilder(accountInfo.account)
+  _submitOperations(account, label, sourceWallet, fundingWallet, operations, memo = null, additionalSigners = null) {
+    const builder = new StellarSdk.TransactionBuilder(account)
 
     for (const operation of operations) {
       builder.addOperation(operation)
