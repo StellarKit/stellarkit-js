@@ -508,6 +508,17 @@ export default class StellarAPI {
 
                     return null
                   })
+              case 'create-account':
+                return spec.newWallet.publicKey()
+                  .then((publicKey) => {
+                    const options = {
+                      destination: publicKey,
+                      startingBalance: spec.startingBalance
+                    }
+
+                    const operation = StellarOperations.createAccount(options)
+                    operations.push(operation)
+                  })
               default:
                 console.log('not handled: ' + spec.type)
                 return null
