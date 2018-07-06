@@ -516,7 +516,7 @@ export default class StellarAPI {
                       startingBalance: spec.startingBalance
                     }
 
-                    const operation = StellarOperations.createAccount(options)
+                    const operation = StellarSdk.Operation.createAccount(options)
                     operations.push(operation)
                   })
               default:
