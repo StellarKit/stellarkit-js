@@ -19,19 +19,19 @@
     "javascript"
   ],
   "dependencies": {
-    "babel-runtime": "^6.26.0",
-    "stellar-sdk": "^0.10.1",
+    "@babel/runtime": "^7.0.0",
+    "stellar-sdk": "^0.10.3",
     "axios": "^0.18.0",
     "@ledgerhq/hw-transport-u2f": "^4.21.0",
     "@ledgerhq/hw-app-str": "^4.21.0"
   },
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.5",
-    "babel-preset-env": "^1.7.0",
-    "eslint": "^5.3.0",
+    "@babel/core": "^7.0.1",
+    "babel-loader": "^8.0.2",
+    "@babel/preset-env": "^7.0.0",
+    "eslint": "^5.5.0",
     "eslint-loader": "^2.1.0",
-    "webpack": "^4.16.5",
+    "webpack": "^4.19.0",
     "webpack-cli": "^3.1.0"
   }
 }
