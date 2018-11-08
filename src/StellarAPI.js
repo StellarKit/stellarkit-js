@@ -518,6 +518,8 @@ export default class StellarAPI {
 
                     const operation = StellarSdk.Operation.createAccount(options)
                     operations.push(operation)
+
+                    return null
                   })
               default:
                 console.log('not handled: ' + spec.type)
