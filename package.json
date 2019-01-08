@@ -19,20 +19,20 @@
     "javascript"
   ],
   "dependencies": {
-    "@babel/runtime": "^7.1.2",
+    "@babel/runtime": "^7.2.0",
     "babel-runtime": "^6.26.0",
     "stellar-sdk": "^0.11.0",
     "axios": "^0.18.0",
-    "@ledgerhq/hw-transport-u2f": "^4.28.0",
-    "@ledgerhq/hw-app-str": "^4.24.0"
+    "@ledgerhq/hw-transport-u2f": "^4.32.0",
+    "@ledgerhq/hw-app-str": "^4.32.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.1.2",
-    "babel-loader": "^8.0.4",
-    "@babel/preset-env": "^7.1.0",
-    "eslint": "^5.8.0",
-    "eslint-loader": "2.1.0",
-    "webpack": "^4.25.0",
-    "webpack-cli": "^3.1.2"
+    "@babel/core": "^7.2.2",
+    "babel-loader": "^8.0.5",
+    "@babel/preset-env": "^7.2.3",
+    "eslint": "^5.12.0",
+    "eslint-loader": "2.1.1",
+    "webpack": "^4.28.3",
+    "webpack-cli": "^3.2.1"
   }
 }
