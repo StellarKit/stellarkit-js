@@ -5,6 +5,7 @@ import LedgerAPI from './src/LedgerAPI.js'
 import LedgerAPITransport from './src/LedgerAPITransport.js'
 import TransactionLogger from './src/TransactionLogger.js'
 import StreamCache from './src/StreamCache.js'
+import Utils from './src/utils.js'
 
 export {
   StellarAPI,
@@ -13,5 +14,6 @@ export {
   LedgerAPI,
   LedgerAPITransport,
   TransactionLogger,
-  StreamCache
+  StreamCache,
+  Utils
 }
